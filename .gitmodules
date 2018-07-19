@@ -1,0 +1,3 @@
+[submodule "2pcf_plugins/Corrfunc"]
+	path = 2pcf_plugins/Corrfunc
+	url = https://github.com/manodeep/Corrfunc
