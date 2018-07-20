@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <assert.h>
 
 #include "2pcf_plugins/Corrfunc/io/io.h"
 #include "countpairs.h"
@@ -7,12 +8,11 @@
 
 int main() {
     char fname[] = "./inputs/ascii_input.txt";
-    char format[] = "ascci";
+    char format[] = "a";
 
-    double *x1=NULL, *y1=NULL, *z1=NULL;
+    float *x1=NULL, *y1=NULL, *z1=NULL;
 
-    int npoints = read_positions(fname, format, sizeof(x1), 3, &x1, &y1, &z1);
-    printf("%d\n", npoints);
+    int npoints1 = read_positions(fname, format, sizeof(*x1), 3, &x1, &y1, &z1);
 
     int nthreads = 1, autocorr = 0;
     char binfile[] = "./inputs/bins";
@@ -24,32 +24,24 @@ int main() {
     /* printf("periodic: %d\n", options.periodic); */
     /* printf("boxsize: %f\n", options.boxsize); */
     /* printf("float type: %zu\n", options.float_type); */
+    options.float_type = sizeof(float);
     options.verbose = 0;
     options.periodic = 1;
     options.boxsize = 500;
 
-    int status = countpairs(npoints, x1, y1, z1,
-                            npoints, x1, y1, z1,
+    int status = countpairs(npoints1, x1, y1, z1,
+                            npoints1, x1, y1, z1,
                             nthreads,
                             autocorr,
                             binfile,
                             &results,
                             &options, NULL);
-    printf("%d\n", status);
-    printf("Npairs: %lu\n", *results.npairs);
-    printf("Nbin: %u\n", results.nbin);
-    printf("Rupp: %lf\n", results.rupp[0]);
-    printf("Rpavg: %lf\n", results.rpavg[0]);
-    printf("Wavg: %lf\n", results.weightavg[0]);
-
-
-  /* typedef struct{ */
-  /*   uint64_t *npairs; */
-  /*   double *rupp; */
-  /*   double *rpavg; */
-  /*   double *weightavg; */
-  /*   int nbin; */
-  /* } results_countpairs; */
-
+    assert(status == 0);
+    for (int i = 0; i < results.nbin; i++) {
+        printf("Bin number          : %d\n", i);
+        printf("Upper R bound on bin: %lf\n", results.rupp[i]);
+        printf("Npairs in bin       : %lu\n", results.npairs[i]);
+        printf("\n");
+    }
     return 0;
 }
