@@ -27,8 +27,7 @@ int main() {
 
     int nthreads = 1;
     int autocorr = 0;
-    /* float *x1=NULL, *y1=NULL, *z1=NULL; */
-    /* int npoints1 = read_positions(fname, format, sizeof(*x1), 3, &x1, &y1, &z1); */
+
     double *data[NUM_FIELDS] = {};
     double limits[NUM_FIELDS][2] = { {0, 10}, {0, 10}, {0, 10} };
     int npoints1 = read_input_data(fname, format, limits, data);
