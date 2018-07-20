@@ -20,14 +20,10 @@ int main() {
     results_countpairs results;
     // get_config_options is ~ get_default_config. We can then modify below
     struct config_options options = get_config_options();
-    /* printf("verbose: %d\n", options.verbose); */
-    /* printf("periodic: %d\n", options.periodic); */
-    /* printf("boxsize: %f\n", options.boxsize); */
-    /* printf("float type: %zu\n", options.float_type); */
     options.float_type = sizeof(float);
     options.verbose = 0;
     options.periodic = 1;
-    options.boxsize = 500;
+    options.boxsize = 10;
 
     int status = countpairs(npoints1, x1, y1, z1,
                             npoints1, x1, y1, z1,
