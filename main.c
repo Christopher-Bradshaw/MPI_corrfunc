@@ -9,21 +9,21 @@
 int main() {
     char fname[] = "./inputs/ascii_input.txt";
     char format[] = "a";
-
-    float *x1=NULL, *y1=NULL, *z1=NULL;
-
-    int npoints1 = read_positions(fname, format, sizeof(*x1), 3, &x1, &y1, &z1);
-
-    int nthreads = 1, autocorr = 0;
     char binfile[] = "./inputs/bins";
 
-    results_countpairs results;
+    int nthreads = 1;
+    int autocorr = 0;
+    float *x1=NULL, *y1=NULL, *z1=NULL;
+    int npoints1 = read_positions(fname, format, sizeof(*x1), 3, &x1, &y1, &z1);
+
     // get_config_options is ~ get_default_config. We can then modify below
     struct config_options options = get_config_options();
     options.float_type = sizeof(float);
     options.verbose = 0;
-    options.periodic = 1;
+    options.periodic = 0;
     options.boxsize = 10;
+
+    results_countpairs results;
 
     int status = countpairs(npoints1, x1, y1, z1,
                             npoints1, x1, y1, z1,
