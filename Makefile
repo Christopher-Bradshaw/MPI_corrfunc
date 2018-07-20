@@ -4,12 +4,10 @@ CC = gcc
 LDFLAGS = -lm
 
 
-IO_DEPS = $(addprefix ./2pcf_plugins/Corrfunc/, io/io.o io/ftread.o utils/utils.o)
-DD_DEPS = $(addprefix ./2pcf_plugins/Corrfunc/theory/DD/, \
-		countpairs_impl_double.o countpairs_impl_float.o countpairs.o) \
-		$(addprefix ./2pcf_plugins/Corrfunc/utils/, \
-		progressbar.o gridlink_impl_double.o gridlink_impl_float.o cpu_features.o)
+CF_IO = $(addprefix ./2pcf_plugins/Corrfunc/, io/io.o io/ftread.o utils/utils.o)
+CF_COUNTERS = $(addprefix ./2pcf_plugins/Corrfunc/, theory/DD/libcountpairs.a)
+CF_INCL = $(addprefix -I./2pcf_plugins/Corrfunc/, include/ utils/)
 
 main: main.c
-	${CC} -DVERSION=\"${VERSION}\" -I./2pcf_plugins/Corrfunc/utils -c main.c -o main.o
-	${CC} main.o ${IO_DEPS} ${DD_DEPS} -lm -fopenmp -o main
+	${CC} -DVERSION=\"${VERSION}\" ${CF_INCL} -c main.c -o main.o
+	${CC} main.o ${CF_IO} ${CF_COUNTERS} -lm -fopenmp -o main

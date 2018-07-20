@@ -2,8 +2,8 @@
 #include <stdint.h>
 
 #include "2pcf_plugins/Corrfunc/io/io.h"
-#include "2pcf_plugins/Corrfunc/theory/DD/countpairs.h"
-#include "2pcf_plugins/Corrfunc/utils/defs.h"
+#include "countpairs.h"
+#include "defs.h"
 
 int main() {
     char fname[] = "./inputs/ascii_input.txt";
@@ -12,15 +12,21 @@ int main() {
     double *x1=NULL, *y1=NULL, *z1=NULL;
 
     int npoints = read_positions(fname, format, sizeof(x1), 3, &x1, &y1, &z1);
+    printf("%d\n", npoints);
 
-    int nthreads = 1, autocorr = 1;
+    int nthreads = 1, autocorr = 0;
     char binfile[] = "./inputs/bins";
 
     results_countpairs results;
+    // get_config_options is ~ get_default_config. We can then modify below
     struct config_options options = get_config_options();
-    options.verbose = 1;
+    /* printf("verbose: %d\n", options.verbose); */
+    /* printf("periodic: %d\n", options.periodic); */
+    /* printf("boxsize: %f\n", options.boxsize); */
+    /* printf("float type: %zu\n", options.float_type); */
+    options.verbose = 0;
     options.periodic = 1;
-    options.float_type = sizeof(double);
+    options.boxsize = 500;
 
     int status = countpairs(npoints, x1, y1, z1,
                             npoints, x1, y1, z1,
