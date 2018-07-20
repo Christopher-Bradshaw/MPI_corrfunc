@@ -13,3 +13,8 @@ main: main.c
 	${CC} ${DEBUG_FLAGS} -DVERSION=\"${VERSION}\" ${CF_INCL} -c main.c -o main.o
 	${CC} ${DEBUG_FLAGS} ${CFLAGS} -c io/io.c -o io/io.o
 	${CC} ${DEBUG_FLAGS} main.o io/io.o ${CF_COUNTERS} -lm -fopenmp -o main
+
+
+comparison: comparison.c
+	${CC} -DVERSION=\"${VERSION}\" ${CF_INCL} -c comparison.c -o comparison.o
+	${CC} comparison.o ${CF_IO} ${CF_COUNTERS} -lm -fopenmp -o comparison
