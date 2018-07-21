@@ -29,8 +29,10 @@ void cleanup(int idx, char *message, double** data) {
 int64_t read_input_data(
         const char *filename,
         const char format,
-        double limits[NUM_FIELDS][2],
-        double **data) {
+        double data_region[NUM_FIELDS][2],
+        double match_region[NUM_FIELDS][2],
+        double **data,
+        double **match) {
     if (format != 'a') {
         fprintf(stderr, "Only ascii input accepted (format = 'a')");
         return -1;
@@ -116,4 +118,19 @@ int64_t read_input_data(
     }
     fclose(fp);
     return data_idx;
+}
+
+// Come back and worry about things on the edges
+// All of val, lower, upper need to be in: 0 <= x < boxsize
+// 3 cases:
+// 1) ---l******u---: check if l <= v <= u (simple case)
+// 2) ***u------l___: check if v <= u <= l (inverted 1 - v < than both)
+// 3) ___u------l***: check if u <= l <= v (inverted 2 - v > than both)
+uint8_t _in_region(double val, double lower, double upper) {
+    if ((lower <= val && val <= upper) ||
+            (val <= upper && upper <= lower) ||
+            (upper <= lower && lower <= val )) {
+        return 1;
+    }
+    return 0;
 }

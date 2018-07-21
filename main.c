@@ -2,21 +2,28 @@
 #include <stdint.h>
 #include <assert.h>
 #include <time.h>
-/* #include <mpi.h> */
+#include <mpi.h>
 
-#include "./io/io.h"
+#include "./utils/io.h"
+#include "./utils/divide_box.h"
 #include "countpairs.h"
 #include "defs.h"
 
 int main() {
-    /* int world_size; */
-    int world_rank = 0;
-    /* MPI_Init(NULL, NULL); */
-    /* MPI_Comm_size(MPI_COMM_WORLD, &world_size); */
-    /* MPI_Comm_rank(MPI_COMM_WORLD, &world_rank); */
-    /* // Print off a hello world message */
-    /* printf("Hello world from rank %d out of %d processors\n", world_rank, world_size); */
-    printf("In main\n");
+    MPI_Init(NULL, NULL);
+    int world_size;
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    // Print off a hello world message
+    printf("Hello world from rank %d out of %d processors\n", world_rank, world_size);
+
+    double boxsize = 10;
+    double data_region[NUM_FIELDS][2] = { {0, 10}, {0, 10}, {0, 10} };
+    double match_region[NUM_FIELDS][2] = { {0, 10}, {0, 10}, {0, 10} };
+
+    get_region_for_rank(world_rank, world_size, boxsize, 1, data_region, match_region);
+
 
     struct timespec start_time, end_time;
     clock_gettime(CLOCK_MONOTONIC, &start_time);
@@ -29,8 +36,8 @@ int main() {
     int autocorr = 0;
 
     double *data[NUM_FIELDS] = {};
-    double limits[NUM_FIELDS][2] = { {0, 10}, {0, 10}, {0, 10} };
-    int npoints1 = read_input_data(fname, format, limits, data);
+    double *match[NUM_FIELDS] = {};
+    int npoints1 = read_input_data(fname, format, data_region, match_region, data, match);
     double *x1 = data[0], *y1 = data[1], *z1 = data[2];
 
     printf("%d\n", npoints1);
@@ -40,7 +47,7 @@ int main() {
     options.float_type = sizeof(double);
     options.verbose = 0;
     options.periodic = 1;
-    options.boxsize = 10;
+    options.boxsize = boxsize;
 
     results_countpairs results;
 
@@ -68,6 +75,6 @@ int main() {
     fprintf(fd, "%lfms\n", (1e9*end_time.tv_sec + end_time.tv_nsec - (
                 1e9*start_time.tv_sec + start_time.tv_nsec)) / 1e6);
 
-    /* MPI_Finalize(); */
+    MPI_Finalize();
     return 0;
 }
