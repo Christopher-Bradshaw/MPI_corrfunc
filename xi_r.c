@@ -7,18 +7,19 @@
 #include "utils/common.h"
 #include "utils/divide_box.h"
 #include "./io/io.h"
+#include "./io/bins.h"
 #include "countpairs.h"
 
 int xi_r(results_countpairs *results) {
     // config (that should maybe not be hardcoded...)
-    char fname[] = "./inputs/ascii_input.txt";
+    char *filename1 = "./inputs/ascii_input.txt";
+    char *filename2 = "./inputs/ascii_input2.txt";
+    filename2 = NULL;
     char format = 'a';
     char binfile[] = "./inputs/bins";
     double boxsize = 10;
     int nthreads = 1;
-    // Even if we are doing auto-corr overall, in each call we can't.
-    // The match data is in a different region to the data data.
-    int autocorr = 0;
+    int autocorr = 1;
     int periodic = 1;
     // end of config
 
@@ -28,13 +29,15 @@ int xi_r(results_countpairs *results) {
 
     double data_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
     double match_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
-    get_region_for_rank(world_rank, world_size, boxsize, 1, data_region, match_region);
+    double bin_max_r = get_max_r(binfile);
+    get_region_for_rank(world_rank, world_size, boxsize, bin_max_r, data_region, match_region);
 
     double *data[NUM_FIELDS] = {0};
     double *match[NUM_FIELDS] = {0};
     int n_data_points, n_match_points;
     if (read_input_data(
-            fname, format, boxsize,
+            filename1, filename2,
+            format, boxsize, autocorr,
             data_region, match_region,
             &n_data_points, &n_match_points,
             data, match) != 0) {
@@ -48,10 +51,13 @@ int xi_r(results_countpairs *results) {
     options.verbose = 0;
     options.periodic = periodic;
     options.boxsize = boxsize;
+    // Even if we are doing auto-corr overall, in each call we can't.
+    // The match data is in a different region to the data data.
+    int cp_autocorr = 0;
 
     if (countpairs(n_data_points, data[0], data[1], data[2],
                 n_match_points, match[0], match[1], match[2],
-                nthreads, autocorr, binfile, results, &options, NULL) != 0) {
+                nthreads, cp_autocorr, binfile, results, &options, NULL) != 0) {
         fprintf(stderr, "Running countpairs failed\n");
         return -1;
     }
@@ -60,6 +66,7 @@ int xi_r(results_countpairs *results) {
         uint64_t *global_pairs = malloc(results->nbin * sizeof(uint64_t));
         MPI_Reduce(results->npairs, global_pairs, results->nbin,
                 MPI_LONG_LONG, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
+        printf("%lu\n", global_pairs[1]);
         int global_n_data_points; // We don't actually do anything with this at the moment
         MPI_Reduce(&n_data_points, &global_n_data_points, 1,
                 MPI_INT, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);

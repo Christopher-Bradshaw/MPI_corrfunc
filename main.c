@@ -28,7 +28,10 @@ int main(int argc, char **argv) {
 
     results_countpairs results;
     if (strcmp(argv[1], "xi_r") == 0) {
-        xi_r(&results);
+        if (xi_r(&results) == -1) {
+            fprintf(stderr, "Running xi_r failed\n");
+            return -1;
+        }
     } else {
         fprintf(stderr, "Bad choice...\n");
         return -1;

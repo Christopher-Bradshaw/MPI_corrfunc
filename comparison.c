@@ -11,26 +11,32 @@ int main() {
     struct timespec start_time, end_time;
     clock_gettime(CLOCK_MONOTONIC, &start_time);
 
-    char fname[] = "./inputs/ascii_input.txt";
+    char fname1[] = "./inputs/ascii_input.txt";
+    char fname2[] = "./inputs/ascii_input2.txt";
     char format[] = "a";
     char binfile[] = "./inputs/bins";
 
     int nthreads = 1;
     int autocorr = 1;
     double *x1=NULL, *y1=NULL, *z1=NULL;
-    int npoints1 = read_positions(fname, format, sizeof(*x1), 3, &x1, &y1, &z1);
+    int npoints1 = read_positions(fname1, format, sizeof(*x1), 3, &x1, &y1, &z1);
+    double *x2=x1, *y2=y1, *z2=y1;
+    int npoints2 = npoints1;
+    if (!autocorr) {
+        npoints2 = read_positions(fname2, format, sizeof(*x2), 3, &x2, &y2, &z2);
+    }
 
     // get_config_options is ~ get_default_config. We can then modify below
     struct config_options options = get_config_options();
     options.float_type = sizeof(double);
     options.verbose = 0;
-    options.periodic = 0;
+    options.periodic = 1;
     options.boxsize = 10;
 
     results_countpairs results;
 
     int status = countpairs(npoints1, x1, y1, z1,
-                            npoints1, x1, y1, z1,
+                            npoints2, x2, y2, z2,
                             nthreads,
                             autocorr,
                             binfile,

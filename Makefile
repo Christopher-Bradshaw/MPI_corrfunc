@@ -8,7 +8,7 @@ CF_INCL = $(addprefix -I./2pcf_plugins/Corrfunc/, include/ utils/)
 CF_VERSION := 2.1.0
 
 UTILS = $(addprefix ./utils/, divide_box.o)
-IO = $(addprefix ./io/, io.o ascii.o)
+IO = $(addprefix ./io/, io.o ascii.o bins.o)
 
 
 main: *.c io/*.c utils/*.c
@@ -18,6 +18,7 @@ main: *.c io/*.c utils/*.c
 	# IO
 	${CC} ${DEBUG_FLAGS} ${CFLAGS} -c io/io.c -o io/io.o
 	${CC} ${DEBUG_FLAGS} ${CFLAGS} -c io/ascii.c -o io/ascii.o
+	${CC} ${DEBUG_FLAGS} ${CFLAGS} -c io/bins.c -o io/bins.o
 	# Utils
 	${CC} ${DEBUG_FLAGS} ${CFLAGS} -c utils/divide_box.c -o utils/divide_box.o
 	${CC} ${DEBUG_FLAGS} main.o xi_r.o ${UTILS} ${IO} ${CF_COUNTERS} -lm -fopenmp -o main
