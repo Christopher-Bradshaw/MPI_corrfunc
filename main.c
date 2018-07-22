@@ -4,7 +4,7 @@
 #include <time.h>
 #include <mpi.h>
 
-#include "./utils/io.h"
+#include "./io/io.h"
 #include "./utils/divide_box.h"
 #include "countpairs.h"
 #include "defs.h"

@@ -2,6 +2,7 @@
  * Code copied from https://github.com/manodeep/Corrfunc/blob/master/io/io.c
  * and modified
  */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -9,28 +10,15 @@
 
 #include "io.h"
 
-#define MAXLINELENGTH 1000
-#define MEMORY_INCREASE_FAC 1.4 // Unclear what this should be
-
-// Missing from Corrfunc:
-// 1) Option to read floats/doubles
-// 2) Option for different number of fields
-// 3) Option for non ascii input format
-// Why are we doing this?
-// We need a parallel reader
 uint8_t _in_region(double val, double lower, double upper, double boxsize);
 int _initial_alloc(int field_size, int data_len, double **data);
 int _realloc(int field_size, int new_len, double **data);
 
-int64_t read_input_data(
-        const char *filename, const char format, double boxsize,
+int64_t read_ascii_input_data(
+        const char *filename, double boxsize,
         double data_region[NUM_FIELDS][2], double match_region[NUM_FIELDS][2],
         int *data_len, int *match_len,
         double **data, double **match) {
-    if (format != 'a') {
-        fprintf(stderr, "Only ascii input accepted (format = 'a')");
-        return -1;
-    }
 
     // Open file
     FILE *fp = fopen(filename, "r");
