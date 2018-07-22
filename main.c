@@ -86,7 +86,6 @@ int main() {
                             &options, NULL);
     assert(status == 0);
 
-    // int MPI_Reduce( const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm )
     if (world_rank == MASTER_RANK) {
         uint64_t global_pairs[results.nbin];
         MPI_Reduce(results.npairs, global_pairs, results.nbin, MPI_LONG_LONG, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
