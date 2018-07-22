@@ -62,7 +62,7 @@ int get_region_for_rank(
     match_region[2][1] = (t3+1) * boxsize/s3 + max_r;
 
     // If our box isn't periodic we can move anything outside the box to the edge
-    if (periodic) {
+    if (!periodic) {
         for (int i = 0; i < NUM_FIELDS; i++) {
             match_region[i][0] = fmax(match_region[i][0], 0);
             match_region[i][1] = fmin(match_region[i][1], boxsize);

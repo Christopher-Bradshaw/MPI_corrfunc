@@ -11,7 +11,7 @@
 #include "xi_r.h"
 #include "./utils/common.h"
 
-void _log_results(char *funcname, results_countpairs results);
+void _log_results(char *funcname, results_countpairs results, int periodic, int autocorr);
 void _spin_fog_gdb();
 
 int main(int argc, char **argv) {
@@ -31,24 +31,27 @@ int main(int argc, char **argv) {
         // config (that should probably not be hardcoded...)
         char *filename1 = "./inputs/ascii_input.txt";
         char *filename2 = "./inputs/ascii_input2.txt";
-        filename2 = NULL;
         char format = 'a';
         char binfile[] = "./inputs/bins";
         double boxsize = 10;
         int nthreads = 1;
         int autocorr = 1;
-        int periodic = 1;
+        int periodic = 0;
+        if (autocorr == 1) {
+            filename2 = NULL;
+        }
         // end of config
         if (xi_r(filename1, filename2, format, binfile,
-                    boxsize, nthreads, autocorr, periodic, &results) == -1) {
+                    boxsize, nthreads, autocorr, periodic,
+                    &results) == -1) {
             fprintf(stderr, "Running xi_r failed\n");
             return -1;
         }
+        _log_results(argv[1], results, periodic, autocorr);
     } else {
         fprintf(stderr, "Bad choice...\n");
         return -1;
     }
-    _log_results(argv[1], results);
 
 
     clock_gettime(CLOCK_MONOTONIC, &end_time);
@@ -58,10 +61,11 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void _log_results(char *funcname, results_countpairs results) {
+void _log_results(char *funcname, results_countpairs results,
+        int periodic, int autocorr) {
     // Log results
     char outfile[100];
-    sprintf(outfile, "./perf/%s", funcname);
+    sprintf(outfile, "./perf/%s_periodic_%d_autocorr_%d", funcname, periodic, autocorr);
     FILE *fd = fopen(outfile, "w");
     for (int i = 0; i < results.nbin; i++) {
         fprintf(fd, "Bin number          : %d\n", i);

@@ -16,8 +16,15 @@ int main() {
     char format[] = "a";
     char binfile[] = "./inputs/bins";
 
-    int nthreads = 1;
+    // get_config_options is ~ get_default_config. We can then modify below
+    struct config_options options = get_config_options();
+    options.float_type = sizeof(double);
+    options.verbose = 0;
+    options.boxsize = 10;
+    options.periodic = 0;
+
     int autocorr = 1;
+    int nthreads = 1;
     double *x1=NULL, *y1=NULL, *z1=NULL;
     int npoints1 = read_positions(fname1, format, sizeof(*x1), 3, &x1, &y1, &z1);
     double *x2=x1, *y2=y1, *z2=y1;
@@ -26,15 +33,7 @@ int main() {
         npoints2 = read_positions(fname2, format, sizeof(*x2), 3, &x2, &y2, &z2);
     }
 
-    // get_config_options is ~ get_default_config. We can then modify below
-    struct config_options options = get_config_options();
-    options.float_type = sizeof(double);
-    options.verbose = 0;
-    options.periodic = 1;
-    options.boxsize = 10;
-
     results_countpairs results;
-
     int status = countpairs(npoints1, x1, y1, z1,
                             npoints2, x2, y2, z2,
                             nthreads,
@@ -43,7 +42,6 @@ int main() {
                             &results,
                             &options, NULL);
     assert(status == 0);
-
 
     char outfile[100];
     sprintf(outfile, "./perf/cmp_periodic_%d_autocorr_%d", options.periodic, autocorr);
