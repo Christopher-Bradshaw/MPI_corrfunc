@@ -10,19 +10,10 @@
 #include "./io/bins.h"
 #include "countpairs.h"
 
-int xi_r(results_countpairs *results) {
-    // config (that should maybe not be hardcoded...)
-    char *filename1 = "./inputs/ascii_input.txt";
-    char *filename2 = "./inputs/ascii_input2.txt";
-    filename2 = NULL;
-    char format = 'a';
-    char binfile[] = "./inputs/bins";
-    double boxsize = 10;
-    int nthreads = 1;
-    int autocorr = 1;
-    int periodic = 1;
-    // end of config
-
+int xi_r(
+        char *filename1, char *filename2, char format, char *binfile,
+        double boxsize, int nthreads, int autocorr, int periodic,
+        results_countpairs *results) {
     int world_size, world_rank;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -30,7 +21,10 @@ int xi_r(results_countpairs *results) {
     double data_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
     double match_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
     double bin_max_r = get_max_r(binfile);
-    get_region_for_rank(world_rank, world_size, boxsize, bin_max_r, data_region, match_region);
+    get_region_for_rank(
+            world_rank, world_size,
+            boxsize, bin_max_r, periodic,
+            data_region, match_region);
 
     double *data[NUM_FIELDS] = {0};
     double *match[NUM_FIELDS] = {0};

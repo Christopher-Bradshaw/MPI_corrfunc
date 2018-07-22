@@ -5,15 +5,12 @@
 #include "divide_box.h"
 #include "common.h"
 
-#define MIN(a,b) (((a)<(b))?(a):(b))
-
-double _mod(double val, double boxsize);
-
 int get_region_for_rank(
         int rank,
         int world_size,
         double boxsize,
         double max_r,
+        int periodic,
         double data_region[NUM_FIELDS][2],
         double match_region[NUM_FIELDS][2]) {
 
@@ -46,35 +43,31 @@ int get_region_for_rank(
     printf("%d\t%d %d %d\n", rank, t1, t2, t3);
 
     // These will be within the box
-    data_region[0][0] = t1 * boxsize/s1;
-    data_region[0][1] =(t1+1) * boxsize/s1;
-    data_region[1][0] = t2 * boxsize/s2;
-    data_region[1][1] =(t2+1) * boxsize/s2;
-    data_region[2][0] = t3 * boxsize/s3;
-    data_region[2][1] =(t3+1) * boxsize/s3;
+    data_region[0][0] = t1     * boxsize/s1;
+    data_region[0][1] = (t1+1) * boxsize/s1;
+    data_region[1][0] = t2     * boxsize/s2;
+    data_region[1][1] = (t2+1) * boxsize/s2;
+    data_region[2][0] = t3     * boxsize/s3;
+    data_region[2][1] = (t3+1) * boxsize/s3;
 
     // These might be outside the box. If we mod them back in the box that would cause issues:
     // e.g. consider if there is only a single division with boxsize 10 and max_r 1.
     // Then the max region is naively -1 - 11. After modding this becomes 9 - 1 and most data
     // is excluded!
-    match_region[0][0] = t1 *     boxsize/s1 - max_r;
+    match_region[0][0] = t1     * boxsize/s1 - max_r;
     match_region[0][1] = (t1+1) * boxsize/s1 + max_r;
-    match_region[1][0] = t2 *     boxsize/s2 - max_r;
+    match_region[1][0] = t2     * boxsize/s2 - max_r;
     match_region[1][1] = (t2+1) * boxsize/s2 + max_r;
-    match_region[2][0] = t3 *     boxsize/s3 - max_r;
+    match_region[2][0] = t3     * boxsize/s3 - max_r;
     match_region[2][1] = (t3+1) * boxsize/s3 + max_r;
+
+    // If our box isn't periodic we can move anything outside the box to the edge
+    if (periodic) {
+        for (int i = 0; i < NUM_FIELDS; i++) {
+            match_region[i][0] = fmax(match_region[i][0], 0);
+            match_region[i][1] = fmin(match_region[i][1], boxsize);
+        }
+    }
 
     return 0;
 }
-
-double _mod(double val, double boxsize) {
-    if (val >= 0 && val < boxsize) {
-        return val;
-    } else if (val < 0) {
-        return val + boxsize;
-    } else if (val >= boxsize) {
-        return val - boxsize;
-    }
-    exit(-1);
-}
-

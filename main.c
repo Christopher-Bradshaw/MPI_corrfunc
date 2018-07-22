@@ -15,11 +15,11 @@ void _log_results(char *funcname, results_countpairs results);
 void _spin_fog_gdb();
 
 int main(int argc, char **argv) {
+    /* _spin_for_gdb(); // For debugging */
     MPI_Init(NULL, NULL);
     struct timespec start_time, end_time;
     clock_gettime(CLOCK_MONOTONIC, &start_time);
 
-    /* spin_for_gdb(); */
     if (argc == 1) {
         fprintf(stderr, "Pass your desired corelation func as arg 1. Valid options are:\n"
                 "xi_r\n");
@@ -28,7 +28,19 @@ int main(int argc, char **argv) {
 
     results_countpairs results;
     if (strcmp(argv[1], "xi_r") == 0) {
-        if (xi_r(&results) == -1) {
+        // config (that should probably not be hardcoded...)
+        char *filename1 = "./inputs/ascii_input.txt";
+        char *filename2 = "./inputs/ascii_input2.txt";
+        filename2 = NULL;
+        char format = 'a';
+        char binfile[] = "./inputs/bins";
+        double boxsize = 10;
+        int nthreads = 1;
+        int autocorr = 1;
+        int periodic = 1;
+        // end of config
+        if (xi_r(filename1, filename2, format, binfile,
+                    boxsize, nthreads, autocorr, periodic, &results) == -1) {
             fprintf(stderr, "Running xi_r failed\n");
             return -1;
         }
