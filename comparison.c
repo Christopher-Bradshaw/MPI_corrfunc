@@ -11,8 +11,8 @@ int main() {
     struct timespec start_time, end_time;
     clock_gettime(CLOCK_MONOTONIC, &start_time);
 
-    char fname1[] = "./inputs/ascii_input.txt";
-    char fname2[] = "./inputs/ascii_input2.txt";
+    char fname1[] = "./inputs/long_ascii_input.txt";
+    char fname2[] = "./inputs/long_ascii_input2.txt";
     char format[] = "a";
     char binfile[] = "./inputs/bins";
 
