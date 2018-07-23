@@ -30,3 +30,13 @@ mpirun -n 4 main xi_r \
     --format a --binfile ./inputs/bins --boxsize 10 --nthreads 1 \
     --autocorr 1 --periodic 0
 ```
+
+## Performance
+
+2M ascii input, periodic, autocorrelation:
+
+* 2 nodes, 48 threads: 6.2 - 6.4 seconds
+* 4 nodes, 96 threads: 5.9 - 6.2 seconds
+
+This is not good at all... I hope that it is slow from reading the input?
+

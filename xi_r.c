@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <getopt.h>
+#include <time.h>
 
 #include "utils/common.h"
 #include "utils/divide_box.h"
@@ -30,6 +31,8 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
             args->boxsize, bin_max_r, args->periodic,
             data_region, match_region);
 
+    struct timespec start_time, end_time;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
     double *data[NUM_FIELDS] = {0};
     double *match[NUM_FIELDS] = {0};
     int n_data_points, n_match_points;
@@ -42,6 +45,9 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
         fprintf(stderr, "Reading input data failed\n");
         return -1;
     }
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    fprintf(stderr, "IO: %lfms\n", (1e9*end_time.tv_sec + end_time.tv_nsec - (
+                1e9*start_time.tv_sec + start_time.tv_nsec)) / 1e6);
 
     // get_config_options is ~ get_default_config. We can then modify below
     struct config_options options = get_config_options();
