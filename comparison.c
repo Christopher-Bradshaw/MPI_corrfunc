@@ -22,11 +22,11 @@ int main() {
     struct config_options options = get_config_options();
     options.float_type = sizeof(double);
     options.verbose = 0;
-    options.boxsize = 10;
+    options.boxsize = 100;
     options.periodic = 0;
 
-    int autocorr = 1;
-    int nthreads = 1;
+    int autocorr = 0;
+    int nthreads = 8;
     double *x1=NULL, *y1=NULL, *z1=NULL;
     int npoints1 = read_positions(fname1, format, sizeof(*x1), 3, &x1, &y1, &z1);
     double *x2=x1, *y2=y1, *z2=y1;
@@ -46,7 +46,7 @@ int main() {
     assert(status == 0);
 
     char outfile[100];
-    sprintf(outfile, "./perf/cmp_periodic_%d_autocorr_%d", options.periodic, autocorr);
+    sprintf(outfile, "./perf/cmp_periodic_%d_autocorr_%d_long", options.periodic, autocorr);
     FILE *fd = fopen(outfile, "w");
     for (int i = 0; i < results.nbin; i++) {
         fprintf(fd, "Bin number          : %d\n", i);
