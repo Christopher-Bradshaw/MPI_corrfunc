@@ -30,8 +30,8 @@ comparison: comparison.c
 	${CC} comparison.o ${CF_IO} ${CF_COUNTERS} -lm -fopenmp -o comparison
 
 
-.PHONY: run_all_xi_r valgrind
-run_all_xi_r: main
+.PHONY: test valgrind
+test_xi_r: main
 	# autocorr 0, periodic 0
 	mpirun -n 4 main xi_r \
 		--filename1 ./inputs/ascii_input.txt --filename2 ./inputs/ascii_input2.txt \

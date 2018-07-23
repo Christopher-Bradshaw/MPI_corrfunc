@@ -10,6 +10,7 @@
 double get_max_r(char *binfile) {
     FILE *fp = fopen(binfile, "r");
     if (fp == NULL) {
+        fprintf(stderr, "Unable to open binfile %s", binfile);
         return -1;
     }
 
@@ -20,8 +21,7 @@ double get_max_r(char *binfile) {
 
     while(fgets(buffer, MAXLINELENGTH, fp) != NULL) {
         char *token, *saveptr;
-        token = strtok_r(buffer, delimiters, &saveptr);
-        sscanf(token, "%lf", &tmp);
+        strtok_r(buffer, delimiters, &saveptr); // Ignore LHS of bin
         token = strtok_r(NULL, delimiters, &saveptr);
         sscanf(token, "%lf", &tmp);
         if (tmp > largest_bin) {

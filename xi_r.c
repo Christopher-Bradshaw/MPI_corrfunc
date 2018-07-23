@@ -17,9 +17,14 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
+    double bin_max_r = get_max_r(args->binfile);
+    if (bin_max_r == -1) {
+        fprintf(stderr, "Reading bin file failed\n");
+        return -1;
+    }
+
     double data_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
     double match_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
-    double bin_max_r = get_max_r(args->binfile);
     get_region_for_rank(
             world_rank, world_size,
             args->boxsize, bin_max_r, args->periodic,
@@ -56,12 +61,6 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
         fprintf(stderr, "Running countpairs failed\n");
         return -1;
     }
-    for (int i = 0; i < NUM_FIELDS; i++) {
-        if (data[i] != match[i]) {
-            free(data[i]);
-        }
-        free(match[i]);
-    }
 
     if (world_rank == MASTER_RANK) {
         uint64_t *global_pairs = malloc(results->nbin * sizeof(uint64_t));
@@ -78,6 +77,16 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
         MPI_Reduce(&n_data_points, NULL, 1,
                 MPI_INT, MPI_SUM, MASTER_RANK, MPI_COMM_WORLD);
     }
+
+    // Cleanup
+    // There is a lot of memory that I am not freeing here...
+    for (int i = 0; i < NUM_FIELDS; i++) {
+        if (data[i] != match[i]) {
+            free(data[i]);
+        }
+        free(match[i]);
+    }
+
     return 0;
 }
 

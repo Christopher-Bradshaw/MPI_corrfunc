@@ -15,16 +15,15 @@ int get_region_for_rank(
         double match_region[NUM_FIELDS][2]) {
 
     // We want to maximise the volume to area ratio of each region.
-    // The best cuboid for this is a cube. Try keep each side similar sized
+    // The best cuboid for this is a cube.
+    // sx is the number of divisions along dimension x
     int s1, s2, s3;
 
     double ideal_per_side = pow(world_size, 1./3);
     s1 = floor(ideal_per_side);
 
     double remainder = world_size / s1;
-
     ideal_per_side = pow(remainder, 1./2);
-
     s2 = floor(ideal_per_side);
     s3 = floor(remainder /= s2);
 
@@ -35,11 +34,14 @@ int get_region_for_rank(
         }
     }
 
+    // tx is the index along that dimension for this rank
+    // t3 changes the quickest
     int t1 = rank / (s2 * s3);
     int t2 = (rank - t1 * s2 * s3) / s3;
     int t3 = rank - t1 * s2 * s3 - t2 * s3;
 
-    // These will be within the box
+    // These will be in the range [0, boxsize]. When checking if we are in the region
+    // we will check for [lower, upper) which ensures there is no double counting.
     data_region[0][0] = t1     * boxsize/s1;
     data_region[0][1] = (t1+1) * boxsize/s1;
     data_region[1][0] = t2     * boxsize/s2;
