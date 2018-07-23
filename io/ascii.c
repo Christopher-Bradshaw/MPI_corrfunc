@@ -2,6 +2,7 @@
  * Code copied from https://github.com/manodeep/Corrfunc/blob/master/io/io.c
  * and modified
  */
+#define _GNU_SOURCE
 
 #include <stdlib.h>
 #include <stdio.h>
