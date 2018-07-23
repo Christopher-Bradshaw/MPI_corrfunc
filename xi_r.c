@@ -1,5 +1,6 @@
 /* Xi(r) calculates the npairs in 3d spheres
  */
+#define _POSIX_C_SOURCE 199309L
 #include <mpi.h>
 #include <stdio.h>
 #include <stdint.h>
