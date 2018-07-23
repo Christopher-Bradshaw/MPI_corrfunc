@@ -1,3 +1,7 @@
+#define _POSIX_C_SOURCE 199309L
+#define _XOPEN_SOURCE 500
+#include <unistd.h>
+
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
@@ -74,7 +78,6 @@ void _log_results(char *funcname, results_countpairs results,
 }
 
 void _spin_for_gdb() {
-#include <unistd.h>
     int i = 0;
     char hostname[256];
     gethostname(hostname, sizeof(hostname));

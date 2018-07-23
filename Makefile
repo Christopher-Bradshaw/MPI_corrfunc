@@ -1,7 +1,9 @@
 CC = mpicc
 
 DEBUG_FLAGS = -g
-CFLAGS = -Wall -pedantic
+CFLAGS = -std=c99
+# Using these on included Corrfunc files is noisy
+OPT = -Wall -pedantic
 
 CF_COUNTERS = $(addprefix ./2pcf_plugins/Corrfunc/, theory/DD/libcountpairs.a)
 CF_INCL = $(addprefix -I./2pcf_plugins/Corrfunc/, include/ utils/)
@@ -12,16 +14,16 @@ IO = $(addprefix ./io/, io.o ascii.o bins.o)
 
 
 main: *.c io/*.c utils/*.c
-	${CC} ${DEBUG_FLAGS} ${CF_INCL} -c main.c -o main.o
+	${CC} ${CFLAGS} ${CF_INCL} -c main.c -o main.o
 	# Pair computers
-	${CC} ${DEBUG_FLAGS} -DVERSION=\"${CF_VERSION}\" ${CF_INCL} -c xi_r.c -o xi_r.o
+	${CC} ${CFLAGS} ${DEBUG_FLAGS} -DVERSION=\"${CF_VERSION}\" ${CF_INCL} -c xi_r.c -o xi_r.o
 	# IO
-	${CC} ${DEBUG_FLAGS} ${CFLAGS} -c io/io.c -o io/io.o
-	${CC} ${DEBUG_FLAGS} ${CFLAGS} -c io/ascii.c -o io/ascii.o
-	${CC} ${DEBUG_FLAGS} ${CFLAGS} -c io/bins.c -o io/bins.o
+	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c io/io.c -o io/io.o
+	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c io/ascii.c -o io/ascii.o
+	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c io/bins.c -o io/bins.o
 	# Utils
-	${CC} ${DEBUG_FLAGS} ${CFLAGS} -c utils/divide_box.c -o utils/divide_box.o
-	${CC} ${DEBUG_FLAGS} main.o xi_r.o ${UTILS} ${IO} ${CF_COUNTERS} -lm -fopenmp -o main
+	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c utils/divide_box.c -o utils/divide_box.o
+	${CC} ${CFLAGS} ${DEBUG_FLAGS} main.o xi_r.o ${UTILS} ${IO} ${CF_COUNTERS} -lm -fopenmp -o main
 
 
 CF_IO = $(addprefix ./2pcf_plugins/Corrfunc/, io/io.o io/ftread.o utils/utils.o)
