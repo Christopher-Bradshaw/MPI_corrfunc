@@ -29,7 +29,6 @@ int get_region_for_rank(
     s3 = floor(remainder /= s2);
 
     if (rank == MASTER_RANK) {
-        printf("%d %d %d\n", s1, s2, s3);
         if (s1 * s2 * s3 != world_size) {
             fprintf(stderr, "Only using %d ranks. Consider reducing your allocation"
                     "to that or increasing it to the next 'good' number\n", s1*s2*s3);
@@ -39,8 +38,6 @@ int get_region_for_rank(
     int t1 = rank / (s2 * s3);
     int t2 = (rank - t1 * s2 * s3) / s3;
     int t3 = rank - t1 * s2 * s3 - t2 * s3;
-
-    printf("%d\t%d %d %d\n", rank, t1, t2, t3);
 
     // These will be within the box
     data_region[0][0] = t1     * boxsize/s1;

@@ -28,3 +28,31 @@ CF_IO = $(addprefix ./2pcf_plugins/Corrfunc/, io/io.o io/ftread.o utils/utils.o)
 comparison: comparison.c
 	${CC} -DVERSION=\"${CF_VERSION}\" ${CF_INCL} -c comparison.c -o comparison.o
 	${CC} comparison.o ${CF_IO} ${CF_COUNTERS} -lm -fopenmp -o comparison
+
+
+.PHONY: run_all_xi_r
+run_all_xi_r: main
+	# autocorr 0, periodic 0
+	mpirun -n 4 main xi_r \
+		--filename1 ./inputs/ascii_input.txt --filename2 ./inputs/ascii_input2.txt \
+		--format a --binfile ./inputs/bins --boxsize 10 --nthreads 1 \
+		--autocorr 0 --periodic 0
+	diff ./perf/cmp_periodic_0_autocorr_0 ./perf/xi_r_periodic_0_autocorr_0
+	# autocorr 0, periodic 1
+	mpirun -n 4 main xi_r \
+		--filename1 ./inputs/ascii_input.txt --filename2 ./inputs/ascii_input2.txt \
+		--format a --binfile ./inputs/bins --boxsize 10 --nthreads 1 \
+		--autocorr 0 --periodic 1
+	diff ./perf/cmp_periodic_1_autocorr_0 ./perf/xi_r_periodic_1_autocorr_0
+	# autocorr 1, periodic 0
+	mpirun -n 4 main xi_r \
+		--filename1 ./inputs/ascii_input.txt \
+		--format a --binfile ./inputs/bins --boxsize 10 --nthreads 1 \
+		--autocorr 1 --periodic 0
+	diff ./perf/cmp_periodic_0_autocorr_1 ./perf/xi_r_periodic_0_autocorr_1
+	# autocorr 1, periodic 1
+	mpirun -n 4 main xi_r \
+		--filename1 ./inputs/ascii_input.txt \
+		--format a --binfile ./inputs/bins --boxsize 10 --nthreads 1 \
+		--autocorr 1 --periodic 1
+	diff ./perf/cmp_periodic_1_autocorr_1 ./perf/xi_r_periodic_1_autocorr_1

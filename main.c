@@ -6,10 +6,12 @@
 
 #include "./io/io.h"
 #include "./utils/divide_box.h"
+#include "./utils/common.h"
+
 #include "countpairs.h"
 #include "defs.h"
+
 #include "xi_r.h"
-#include "./utils/common.h"
 
 void _log_results(char *funcname, results_countpairs results, int periodic, int autocorr);
 void _spin_fog_gdb();
@@ -28,26 +30,17 @@ int main(int argc, char **argv) {
 
     results_countpairs results;
     if (strcmp(argv[1], "xi_r") == 0) {
-        // config (that should probably not be hardcoded...)
-        char *filename1 = "./inputs/ascii_input.txt";
-        char *filename2 = "./inputs/ascii_input2.txt";
-        char format = 'a';
-        char binfile[] = "./inputs/bins";
-        double boxsize = 10;
-        int nthreads = 1;
-        int autocorr = 1;
-        int periodic = 0;
-        if (autocorr == 1) {
-            filename2 = NULL;
+        xi_r_args args = {};
+        if (get_xi_r_args(argc, argv, &args) != 0) {
+            fprintf(stderr, "Couldn't read args\n");
+            return -1;
         }
-        // end of config
-        if (xi_r(filename1, filename2, format, binfile,
-                    boxsize, nthreads, autocorr, periodic,
-                    &results) == -1) {
+
+        if (xi_r(&args, &results) == -1) {
             fprintf(stderr, "Running xi_r failed\n");
             return -1;
         }
-        _log_results(argv[1], results, periodic, autocorr);
+        _log_results("xi_r", results, args.periodic, args.autocorr);
     } else {
         fprintf(stderr, "Bad choice...\n");
         return -1;
