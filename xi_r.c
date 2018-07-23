@@ -47,7 +47,8 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
         return -1;
     }
     clock_gettime(CLOCK_MONOTONIC, &end_time);
-    fprintf(stderr, "IO: %lfms\n", (1e9*end_time.tv_sec + end_time.tv_nsec - (
+    fprintf(stderr, "IO: %lfms\n", (
+                1e9*end_time.tv_sec + end_time.tv_nsec - (
                 1e9*start_time.tv_sec + start_time.tv_nsec)) / 1e6);
 
     // get_config_options is ~ get_default_config. We can then modify below
@@ -61,6 +62,7 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
     // the data data.
     int cp_autocorr = 0;
 
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
     if (countpairs(n_data_points, data[0], data[1], data[2],
                 n_match_points, match[0], match[1], match[2],
                 args->nthreads, cp_autocorr, args->binfile,
@@ -93,6 +95,9 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
         }
         free(match[i]);
     }
+    fprintf(stderr, "PC: %lfms\n", (
+                1e9*end_time.tv_sec + end_time.tv_nsec - (
+                1e9*start_time.tv_sec + start_time.tv_nsec)) / 1e6);
 
     return 0;
 }

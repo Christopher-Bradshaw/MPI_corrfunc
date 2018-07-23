@@ -1,11 +1,9 @@
-#define _POSIX_C_SOURCE 199309L
 #define _XOPEN_SOURCE 500
 #include <unistd.h>
 
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
-#include <time.h>
 #include <mpi.h>
 
 #include "./io/io.h"
@@ -23,8 +21,6 @@ void _spin_fog_gdb();
 int main(int argc, char **argv) {
     /* _spin_for_gdb(); // For debugging */
     MPI_Init(NULL, NULL);
-    struct timespec start_time, end_time;
-    clock_gettime(CLOCK_MONOTONIC, &start_time);
 
     if (argc == 1) {
         fprintf(stderr, "Pass your desired corelation func as arg 1. Valid options are:\n"
@@ -50,10 +46,6 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-
-    clock_gettime(CLOCK_MONOTONIC, &end_time);
-    fprintf(stderr, "%lfms\n", (1e9*end_time.tv_sec + end_time.tv_nsec - (
-                1e9*start_time.tv_sec + start_time.tv_nsec)) / 1e6);
     MPI_Finalize();
     return 0;
 }

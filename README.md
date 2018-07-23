@@ -33,10 +33,14 @@ mpirun -n 4 main xi_r \
 
 ## Performance
 
-2M ascii input, periodic, autocorrelation:
+2M ascii input, periodic, autocorrelation, 24 threads per node, ignoring IO:
 
-* 2 nodes, 48 threads: 6.2 - 6.4 seconds
-* 4 nodes, 96 threads: 5.9 - 6.2 seconds
+* 2 nodes: 3s
+* 4 nodes: 2s
+* 8 nodes: 1.5s
 
-This is not good at all... I hope that it is slow from reading the input?
+Doubling the number of nodes gives ~1.5x improvement. This is surprising.. I would have thought it would be much better.
 
+Ascii IO performance is awful... Reading this file takes 4s.
+
+Tried with 12 threads rather than 24 and is was very slighly worse. 3.2s for 4 nodes.
