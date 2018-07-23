@@ -21,7 +21,12 @@ This doesn't implement any 2pcf finding code. For that we use https://github.com
 * Write new io functions to read only the data each rank needs
 * Collate the results
 
-
 ## Interface
 
-???
+See the makefile for more examples but you can run it with something like:
+```
+mpirun -n 4 main xi_r \
+    --filename1 ./inputs/ascii_input.txt \
+    --format a --binfile ./inputs/bins --boxsize 10 --nthreads 1 \
+    --autocorr 1 --periodic 0
+```

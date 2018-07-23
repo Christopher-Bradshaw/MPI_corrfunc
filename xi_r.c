@@ -17,14 +17,6 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
-    /* if (world_rank == MASTER_RANK) { */
-    /*     printf("Here\n"); */
-    /*     printf("%d\t%d\n", args->autocorr, args->periodic); */
-    /*     printf("%s\t%s\n", args->filename1, args->filename2); */
-    /*     printf("%d\t%lf\n", args->nthreads, args->boxsize); */
-    /*     printf("%c\t%s\n", args->format, args->binfile); */
-    /* } */
-
     double data_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
     double match_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
     double bin_max_r = get_max_r(args->binfile);
@@ -52,8 +44,9 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
     options.verbose = 0;
     options.periodic = args->periodic;
     options.boxsize = args->boxsize;
-    // Even if we are doing auto-corr overall, in each call we can't.
-    // The match data is in a different region to the data data.
+    // If we are doing an autocorrelation overall, each call still needs to be
+    // a cross correlation as the match data is different to (a superset of)
+    // the data data.
     int cp_autocorr = 0;
 
     if (countpairs(n_data_points, data[0], data[1], data[2],
