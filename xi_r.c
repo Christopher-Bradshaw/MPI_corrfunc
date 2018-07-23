@@ -95,6 +95,7 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
         }
         free(match[i]);
     }
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
     fprintf(stderr, "PC: %lfms\n", (
                 1e9*end_time.tv_sec + end_time.tv_nsec - (
                 1e9*start_time.tv_sec + start_time.tv_nsec)) / 1e6);
