@@ -30,7 +30,7 @@ comparison: comparison.c
 	${CC} comparison.o ${CF_IO} ${CF_COUNTERS} -lm -fopenmp -o comparison
 
 
-.PHONY: run_all_xi_r
+.PHONY: run_all_xi_r valgrind
 run_all_xi_r: main
 	# autocorr 0, periodic 0
 	mpirun -n 4 main xi_r \
@@ -56,3 +56,9 @@ run_all_xi_r: main
 		--format a --binfile ./inputs/bins --boxsize 10 --nthreads 1 \
 		--autocorr 1 --periodic 1
 	diff ./perf/cmp_periodic_1_autocorr_1 ./perf/xi_r_periodic_1_autocorr_1
+
+valgrind: main
+	valgrind --leak-check=full ./main xi_r \
+		--filename1 ./inputs/short_ascii_input.txt --filename2 ./inputs/short_ascii_input2.txt \
+		--format a --binfile ./inputs/bins --boxsize 10 --nthreads 1 \
+		--autocorr 0 --periodic 0

@@ -56,7 +56,11 @@ int main(int argc, char **argv) {
 
 void _log_results(char *funcname, results_countpairs results,
         int periodic, int autocorr) {
-    // Log results
+    int world_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    if (world_rank != MASTER_RANK) {
+        return;
+    }
     char outfile[100];
     sprintf(outfile, "./perf/%s_periodic_%d_autocorr_%d", funcname, periodic, autocorr);
     FILE *fd = fopen(outfile, "w");

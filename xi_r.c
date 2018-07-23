@@ -63,6 +63,12 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
         fprintf(stderr, "Running countpairs failed\n");
         return -1;
     }
+    for (int i = 0; i < NUM_FIELDS; i++) {
+        if (data[i] != match[i]) {
+            free(data[i]);
+        }
+        free(match[i]);
+    }
 
     if (world_rank == MASTER_RANK) {
         uint64_t *global_pairs = malloc(results->nbin * sizeof(uint64_t));
