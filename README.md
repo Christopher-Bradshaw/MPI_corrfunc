@@ -35,12 +35,22 @@ mpirun -n 4 main xi_r \
 
 2M ascii input, periodic, autocorrelation, 24 threads per node, ignoring IO:
 
+* 1 nodes: 5.4s
 * 2 nodes: 3s
 * 4 nodes: 2s
 * 8 nodes: 1.5s
 
-Doubling the number of nodes gives ~1.5x improvement. This is surprising.. I would have thought it would be much better.
+Doubling the number of nodes gives ~1.5x improvement so this scales roughly as root(n). This is surprising.. I thought it would be much closer to linear.
 
 Ascii IO performance is awful... Reading this file takes 4s.
 
 Tried with 12 threads rather than 24 and is was very slighly worse. 3.2s for 4 nodes.
+
+Running with MPI locally though we get much better results:
+
+* 1 nodes: 4.2
+* 2 nodes: 2.1
+* 4 nodes: 1.2
+* 8 nodes: 0.7
+
+Linear speed up with few nodes, only slightly less than linear as we max out the CPU. But as all these "nodes" are using the same memory, that could be the cause. Even with potential memory contention we get 6x speed up here from 1-8 vs 3x on Edison.
