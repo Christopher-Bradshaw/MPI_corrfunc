@@ -50,7 +50,6 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
         master_log(stderr, "Reading input data failed\n");
         return -1;
     }
-    printf("%d\n", args->nthreads);
     clock_gettime(CLOCK_MONOTONIC, &end_time);
     fprintf(stderr, "IO: %lfms\n", (
                 1e9*end_time.tv_sec + end_time.tv_nsec - (
