@@ -9,6 +9,7 @@
 #include "./io/io.h"
 #include "./utils/divide_box.h"
 #include "./utils/common.h"
+#include "./utils/errors.h"
 
 #include "countpairs.h"
 #include "defs.h"
@@ -26,7 +27,7 @@ int main(int argc, char **argv) {
     _say_hello(); // For testing
 
     if (argc == 1) {
-        fprintf(stderr, "Pass your desired corelation func as arg 1. Valid options are:\n"
+        master_log(stderr, "Pass your desired corelation func as arg 1. Valid options are:\n"
                 "xi_r\n");
         return -1;
     }
@@ -35,17 +36,17 @@ int main(int argc, char **argv) {
     if (strcmp(argv[1], "xi_r") == 0) {
         xi_r_args args = {};
         if (get_xi_r_args(argc, argv, &args) != 0) {
-            fprintf(stderr, "Couldn't read args\n");
+            master_log(stderr, "Couldn't read args\n");
             return -1;
         }
 
         if (xi_r(&args, &results) == -1) {
-            fprintf(stderr, "Running xi_r failed\n");
+            master_log(stderr, "Running xi_r failed\n");
             return -1;
         }
         _log_results("xi_r", results, args.periodic, args.autocorr);
     } else {
-        fprintf(stderr, "Bad choice...\n");
+        master_log(stderr, "Bad choice...\n");
         return -1;
     }
 

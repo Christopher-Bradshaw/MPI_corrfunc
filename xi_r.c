@@ -9,6 +9,7 @@
 
 #include "utils/common.h"
 #include "utils/divide_box.h"
+#include "utils/errors.h"
 #include "./io/io.h"
 #include "./io/bins.h"
 #include "countpairs.h"
@@ -21,16 +22,19 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
 
     double bin_max_r = get_max_r(args->binfile);
     if (bin_max_r == -1) {
-        fprintf(stderr, "Reading bin file failed\n");
+        master_log(stderr, "Reading bin file failed\n");
         return -1;
     }
 
     double data_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
     double match_region[NUM_FIELDS][2] = {{0}, {0}, {0}};
-    get_region_for_rank(
-            world_rank, world_size,
-            args->boxsize, bin_max_r, args->periodic,
-            data_region, match_region);
+    if (get_region_for_rank(
+                world_rank, world_size,
+                args->boxsize, bin_max_r, args->periodic,
+                data_region, match_region) != 0) {
+        master_log(stderr, "Getting region failed\n");
+        return -1;
+    }
 
     struct timespec start_time, end_time;
     clock_gettime(CLOCK_MONOTONIC, &start_time);
@@ -43,9 +47,10 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
             data_region, match_region,
             &n_data_points, &n_match_points,
             data, match) != 0) {
-        fprintf(stderr, "Reading input data failed\n");
+        master_log(stderr, "Reading input data failed\n");
         return -1;
     }
+    printf("%d\n", args->nthreads);
     clock_gettime(CLOCK_MONOTONIC, &end_time);
     fprintf(stderr, "IO: %lfms\n", (
                 1e9*end_time.tv_sec + end_time.tv_nsec - (
@@ -67,7 +72,7 @@ int xi_r(xi_r_args *args, results_countpairs *results) {
                 n_match_points, match[0], match[1], match[2],
                 args->nthreads, cp_autocorr, args->binfile,
                 results, &options, NULL) != 0) {
-        fprintf(stderr, "Running countpairs failed\n");
+        master_log(stderr, "Running countpairs failed\n");
         return -1;
     }
 
@@ -158,7 +163,7 @@ int get_xi_r_args(int argc, char **argv, xi_r_args *args) {
         }
     }
     if (seen != 255 && seen != 253) {
-        fprintf(stderr, "Only filename2 is optional!\n");
+        master_log(stderr, "Only filename2 is optional!\n");
         return -1;
     }
     return 0;
