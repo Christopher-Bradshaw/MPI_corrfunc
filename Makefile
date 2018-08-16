@@ -14,6 +14,7 @@ IO = $(addprefix ./io/, io.o ascii.o bins.o)
 
 
 main: *.c io/*.c utils/*.c
+	cd 2pcf_plugins/Corrfunc && ${MAKE} install
 	${CC} ${CFLAGS} ${CF_INCL} -c main.c -o main.o
 	# Pair computers
 	${CC} ${CFLAGS} ${DEBUG_FLAGS} -DVERSION=\"${CF_VERSION}\" ${CF_INCL} -c xi_r.c -o xi_r.o
