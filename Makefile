@@ -12,9 +12,7 @@ CF_VERSION := 2.1.0
 UTILS = $(addprefix ./utils/, divide_box.o)
 IO = $(addprefix ./io/, io.o ascii.o bins.o)
 
-
 main: *.c io/*.c utils/*.c
-	cd 2pcf_plugins/Corrfunc && ${MAKE} install
 	${CC} ${CFLAGS} ${CF_INCL} -c main.c -o main.o
 	# Pair computers
 	${CC} ${CFLAGS} ${DEBUG_FLAGS} -DVERSION=\"${CF_VERSION}\" ${CF_INCL} -c xi_r.c -o xi_r.o
@@ -25,6 +23,9 @@ main: *.c io/*.c utils/*.c
 	# Utils
 	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c utils/divide_box.c -o utils/divide_box.o
 	${CC} ${CFLAGS} ${DEBUG_FLAGS} main.o xi_r.o ${UTILS} ${IO} ${CF_COUNTERS} -lm -fopenmp -o main
+
+deps:
+	cd 2pcf_plugins/Corrfunc && ${MAKE} install
 
 
 CF_IO = $(addprefix ./2pcf_plugins/Corrfunc/, io/io.o io/ftread.o utils/utils.o)

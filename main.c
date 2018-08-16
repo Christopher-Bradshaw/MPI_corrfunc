@@ -16,11 +16,14 @@
 #include "xi_r.h"
 
 void _log_results(char *funcname, results_countpairs results, int periodic, int autocorr);
-void _spin_fog_gdb();
+void _spin_for_gdb();
+void _say_hello();
 
 int main(int argc, char **argv) {
     /* _spin_for_gdb(); // For debugging */
     MPI_Init(NULL, NULL);
+
+    _say_hello(); // For testing
 
     if (argc == 1) {
         fprintf(stderr, "Pass your desired corelation func as arg 1. Valid options are:\n"
@@ -58,7 +61,7 @@ void _log_results(char *funcname, results_countpairs results,
         return;
     }
     char outfile[100];
-    sprintf(outfile, "./perf/%s_periodic_%d_autocorr_%d", funcname, periodic, autocorr);
+    sprintf(outfile, "./perf/%s_periodic_%d_autocorr_%d_long", funcname, periodic, autocorr);
     FILE *fd = fopen(outfile, "w");
     for (int i = 0; i < results.nbin; i++) {
         fprintf(fd, "Bin number          : %d\n", i);
@@ -68,6 +71,18 @@ void _log_results(char *funcname, results_countpairs results,
     }
     fclose(fd);
 }
+
+void _say_hello() {
+    int world_rank, world_size, processor_name_len;
+    char processor_name[MPI_MAX_PROCESSOR_NAME];
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+    MPI_Get_processor_name(processor_name, &processor_name_len);
+
+    printf("Hello from %d of %d on processor %s\n", world_rank, world_size, processor_name);
+}
+
 
 void _spin_for_gdb() {
     int i = 0;
