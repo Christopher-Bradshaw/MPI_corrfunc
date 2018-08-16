@@ -4,6 +4,7 @@
 
 #include "divide_box.h"
 #include "common.h"
+#include "errors.h"
 
 int get_region_for_rank(
         int rank,
@@ -27,11 +28,12 @@ int get_region_for_rank(
     s2 = floor(ideal_per_side);
     s3 = floor(remainder /= s2);
 
-    if (rank == MASTER_RANK) {
-        if (s1 * s2 * s3 != world_size) {
-            fprintf(stderr, "Only using %d ranks. Consider reducing your allocation"
-                    "to that or increasing it to the next 'good' number\n", s1*s2*s3);
-        }
+    if (s1 * s2 * s3 != world_size) {
+        master_log(stderr, "Only using %d ranks. Consider reducing your allocation "
+                "to that or increasing it to the next 'good' number\n", s1*s2*s3);
+        // N.B. Don't just remove this! The extra regions will be modded into the box and
+        // will be counted!
+        return -1;
     }
 
     // tx is the index along that dimension for this rank

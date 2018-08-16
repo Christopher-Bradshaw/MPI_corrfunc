@@ -9,11 +9,14 @@ CF_COUNTERS = $(addprefix ./2pcf_plugins/Corrfunc/, theory/DD/libcountpairs.a)
 CF_INCL = $(addprefix -I./2pcf_plugins/Corrfunc/, include/ utils/)
 CF_VERSION := 2.1.0
 
-UTILS = $(addprefix ./utils/, divide_box.o)
+UTILS = $(addprefix ./utils/, divide_box.o errors.o)
 IO = $(addprefix ./io/, io.o ascii.o bins.o)
 
-
 main: *.c io/*.c utils/*.c
+	# Utils
+	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c utils/divide_box.c -o utils/divide_box.o
+	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c utils/errors.c -o utils/errors.o
+	# Main
 	${CC} ${CFLAGS} ${CF_INCL} -c main.c -o main.o
 	# Pair computers
 	${CC} ${CFLAGS} ${DEBUG_FLAGS} -DVERSION=\"${CF_VERSION}\" ${CF_INCL} -c xi_r.c -o xi_r.o
@@ -21,9 +24,11 @@ main: *.c io/*.c utils/*.c
 	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c io/io.c -o io/io.o
 	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c io/ascii.c -o io/ascii.o
 	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c io/bins.c -o io/bins.o
-	# Utils
-	${CC} ${CFLAGS} ${DEBUG_FLAGS} ${OPT} -c utils/divide_box.c -o utils/divide_box.o
+	# Link
 	${CC} ${CFLAGS} ${DEBUG_FLAGS} main.o xi_r.o ${UTILS} ${IO} ${CF_COUNTERS} -lm -fopenmp -o main
+
+deps:
+	cd 2pcf_plugins/Corrfunc && ${MAKE} install
 
 
 CF_IO = $(addprefix ./2pcf_plugins/Corrfunc/, io/io.o io/ftread.o utils/utils.o)
